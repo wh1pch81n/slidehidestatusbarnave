@@ -15,6 +15,16 @@
 	[super viewDidLoad];
 	UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"hi" style:UIBarButtonItemStyleDone target:self action:@selector(toggleStatusBar)];
 	self.navigationItem.rightBarButtonItem = item;
+	self.tableView.contentInset = UIEdgeInsetsMake(CGRectGetMaxY([[self statusBarNavBarView] frame]), 0, 0, 0);
+	[[self statusBarNavBarView] addObserver:self forKeyPath:@"frame" options:NSKeyValueObservingOptionNew context:nil];
+}
+
+- (void)dealloc {
+	[[self statusBarNavBarView] removeObserver:self forKeyPath:@"frame"];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context {
+	self.tableView.contentInset = UIEdgeInsetsMake(CGRectGetMaxY([[self statusBarNavBarView] frame]), 0, 0, 0);
 }
 
 - (void)viewDidAppear:(BOOL)animated {

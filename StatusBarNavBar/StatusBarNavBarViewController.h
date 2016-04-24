@@ -17,6 +17,7 @@
 - (void)toggleStatusBarNavBarVisibility;
 
 - (void)moveBoxByOffset:(CGFloat)offset;
-- (void)moveBoxWithVelocity:(CGPoint)velocity animatedWithCompletion:(void (^)(BOOL b))completion;
+- (void)moveBoxWithVelocity:(CGPoint)velocity animatedWithCompletion:(void (^__nullable)(BOOL b))completion;
+- (UIView *__nonnull)statusBarNavBarView;
 
 @end
