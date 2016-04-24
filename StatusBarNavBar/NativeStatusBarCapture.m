@@ -11,6 +11,39 @@
 
 @implementation NativeStatusBarCapture
 
+//- (void)viewWillAppear:(BOOL)animated {
+//	[super viewWillAppear:animated];
+//	[[[self navigationController] navigationBar] addObserver:self
+//												  forKeyPath:@"hidden"
+//													 options:NSKeyValueObservingOptionNew
+//													 context:nil];
+//}
+//
+//- (void)viewWillDisappear:(BOOL)animated {
+//	[[[self navigationController] navigationBar] removeObserver:self
+//													 forKeyPath:@"hidden"];
+//	
+//}
+//
+//- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context {
+//	if ([object isKindOfClass:[UINavigationBar class]]) {
+//		UINavigationBar *bar = object;
+//		if ([bar isHidden] == false) {
+//				CGFloat statusBarHeight = 20.0;
+//				UIScreen *screen = [UIScreen mainScreen];
+//				UIView *snapshotView = [screen snapshotViewAfterScreenUpdates:true];
+//				CGRect statusNavBarFrame = snapshotView.bounds;
+//				statusNavBarFrame.size.height = statusBarHeight + self.navigationController.navigationBar.frame.size.height;
+//				UIGraphicsBeginImageContextWithOptions(statusNavBarFrame.size, true, 0);
+//				[snapshotView drawViewHierarchyInRect:snapshotView.bounds afterScreenUpdates: true];
+//				UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+//				UIGraphicsEndImageContext();
+//				[[self imageStatus] setImage:image];
+//				self.imageStatus.image = image;
+//		}
+//	}
+//}
+
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	CGFloat statusBarHeight = 20.0;
@@ -22,7 +55,7 @@
 	[snapshotView drawViewHierarchyInRect:snapshotView.bounds afterScreenUpdates: true];
 	UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
 	UIGraphicsEndImageContext();
-	[[self imageStatus] setImage:image];
+	[[self imageStatus] setImage:image];	
 }
 
 #pragma mark UITableViewDelegate
@@ -62,6 +95,26 @@
 		
 	}];
 	didBeginDrag = NO;
+}
+
+//- (UIImage *)takeImageOfStatusBarNavBarRegion {
+//	return self.imageStatus.image;
+//	
+////	CGFloat statusBarHeight = 20.0;
+////	UIScreen *screen = [UIScreen mainScreen];
+////	UIView *snapshotView = [screen snapshotViewAfterScreenUpdates:true];
+////	CGRect statusNavBarFrame = snapshotView.bounds;
+////	statusNavBarFrame.size.height = statusBarHeight + self.navigationController.navigationBar.frame.size.height;
+////	UIGraphicsBeginImageContextWithOptions(statusNavBarFrame.size, true, 0);
+////	[snapshotView drawViewHierarchyInRect:snapshotView.bounds afterScreenUpdates: true];
+////	UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+////	UIGraphicsEndImageContext();
+////	[[self imageStatus] setImage:image];
+////	return image;
+//}
+
+- (BOOL)prefersStatusBarHidden {
+	return [super prefersStatusBarHidden];
 }
 
 @end

@@ -8,7 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-@interface StatusBarNavBarViewController : UIViewController {
+@protocol StatusBarSwizzleDelegate
+@property (nonatomic, assign) BOOL statusBarHidden;
+- (BOOL)prefersStatusBarHidden;
+@end
+
+@interface StatusBarNavBarViewController : UIViewController <StatusBarSwizzleDelegate> {
 @protected BOOL didBeginDrag;
 }
 
@@ -16,11 +21,5 @@
 
 - (void)moveBoxByOffset:(CGFloat)offset;
 - (void)moveBoxWithVelocity:(CGPoint)velocity animatedWithCompletion:(void (^)(BOOL b))completion;
-/**move origin to most negative y position*/
-- (void)moveBoxMinLowAnimatedWithCompletion:(void (^)(BOOL b))completion;
-	
-/**move origin to most positive y position*/
-- (void)moveBoxMaxHighAnimatedWithCompletion:(void (^)(BOOL b))completion;
-		
 
 @end
