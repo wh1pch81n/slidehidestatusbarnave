@@ -29,21 +29,14 @@
 			self.statusBarNavBarView.hidden = NO;
 			[self.navigationController setNavigationBarHidden:YES animated: NO];
 			self.statusBarHidden = YES;
-			[self moveBoxMinLowAnimatedWithCompletion:^(BOOL b) {
-			
-			}];
+			[self moveBoxMinLowAnimatedWithCompletion:nil];
 		} else if ([[self navigationController] isNavigationBarHidden] == YES) {
 			self.statusBarNavBarView.hidden = NO;
 
 			[self.navigationController setNavigationBarHidden:NO animated: YES];
 			[[UIApplication sharedApplication] setStatusBarHidden:NO animated:YES];
 			[self setNeedsStatusBarAppearanceUpdate];
-			[self moveBoxMaxHighAnimatedWithCompletion:^(BOOL b) {
-				self.statusBarHidden = NO;
-//				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//					self.statusBarNavBarView.hidden = YES;
-//				});
-			}];
+			[self moveBoxMaxHighAnimatedWithCompletion:nil];
 		}
 	}
 }
@@ -80,12 +73,12 @@
 		self.statusBarNavBarView.frame = frame;
 		self.statusBarNavBarView.hidden = false;
 		if (offset < 0) { // up
-			NSLog(@"Up");
+//			NSLog(@"Up");
 			[self.navigationController setNavigationBarHidden:YES animated:NO];
 			self.statusBarHidden = YES;
 			
 		} else { // down
-			NSLog(@"down");
+//			NSLog(@"down");
 		}
 	}
 }
@@ -98,21 +91,9 @@
 		// force it in a specific direction
 		CGFloat currY = self.statusBarNavBarView.frame.origin.y;
 		if (((self.highLimitY + self.lowLimitY)/2) <= currY && currY <= self.highLimitY) {
-			[self moveBoxMaxHighAnimatedWithCompletion:^(BOOL b) {
-				[self.navigationController setNavigationBarHidden:NO animated:NO];
-				self.statusBarHidden = NO;
-				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-					[self refreshStatusBarNavBarView];
-				});
-
-				completion(b);
-			}];
+			[self moveBoxMaxHighAnimatedWithCompletion:completion];
 		} else {
-			[self moveBoxMinLowAnimatedWithCompletion:^(BOOL b) {
-				[self.navigationController setNavigationBarHidden:YES animated:NO];
-				self.statusBarHidden = YES;
-				completion(b);
-			}];
+			[self moveBoxMinLowAnimatedWithCompletion:completion];
 		}
 	} else {
 		if (velocity.y > 0) {
@@ -140,9 +121,14 @@
 								 [self.navigationController setNavigationBarHidden:NO animated:NO];
 								 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 									 self.statusBarNavBarView.hidden = YES;
+									 [self refreshStatusBarNavBarView];
 								 });
+							 } else {
+								 [self.navigationController setNavigationBarHidden:YES animated:NO];
+								 self.statusBarHidden = YES;
 							 }
-							 completion(b);
+							 if (completion)
+								 completion(b);
 						 }];
 	}
 }
