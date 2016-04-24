@@ -8,13 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol StatusBarSwizzleDelegate
-@property (nonatomic, assign) BOOL statusBarHidden;
-- (BOOL)prefersStatusBarHidden;
-@end
-
-@interface StatusBarNavBarViewController : UIViewController <StatusBarSwizzleDelegate> {
-@protected BOOL didBeginDrag;
+@interface StatusBarNavBarViewController : UIViewController {
+@protected
+	BOOL didBeginDrag;
+	BOOL statusBarHidden;
 }
 
 - (void)toggleStatusBarNavBarVisibility;

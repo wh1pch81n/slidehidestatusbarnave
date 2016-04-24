@@ -7,76 +7,19 @@
 //
 
 #import "StatusBarNavBarViewController.h"
-#import <objc/runtime.h>
-
-static UIView *statusBar = nil;
-
-@interface UIView(View2Image)
-- (UIImage *)viewToImage;
-@end
-
-@implementation UIView(View2Image)
-- (UIImage *)viewToImage {
-	UIView *view = self;
-	UIImage *viewImage;
-	UIGraphicsBeginImageContextWithOptions(view.bounds.size, view.opaque, 0.0);
-	[[view layer] renderInContext:UIGraphicsGetCurrentContext()];
-	
-	viewImage = UIGraphicsGetImageFromCurrentImageContext();
-	UIGraphicsEndImageContext();
-	
-	return viewImage;
-}
-
-@end
-
-@interface UIView (SwizzleStatusBar)
-+ (UIView *)statusBar;
-+ (UIImage *)statusBarImage;
-@end
-
-@implementation UIView (SwizzleStatusBar)
-
-+ (UIImage *)statusBarImage {
-	return [[self statusBar] viewToImage];
-}
-+ (UIView *)statusBar {
-	return statusBar;
-}
-+ (void)swapTransformWithStatusTransform {
-	SEL origImplmentation = @selector(setTransform:);
-	SEL swizzledImplementation = @selector(setStatusBarTransform:);
-	
-	Method origMethod = class_getInstanceMethod(UIView.class, origImplmentation);
-	Method swizzledMethod = class_getInstanceMethod(UIView.class, swizzledImplementation);
-	
-	method_exchangeImplementations(
-								   origMethod,
-								   swizzledMethod
-								   );
-}
-- (void)setStatusBarTransform:(CGAffineTransform)transform {
-	NSAssert([self isKindOfClass:NSClassFromString(@"UIStatusBar")], @"Expected Status Bar");
-	statusBar = self;
-}
-
-@end
 
 @implementation StatusBarNavBarViewController
-@synthesize statusBarHidden;
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-	if (![UIView statusBar]) {
-		[UIView swapTransformWithStatusTransform];
-		[self setStatusBarHidden:!self.statusBarHidden];
-		[self setStatusBarHidden:!self.statusBarHidden];
-		[UIView swapTransformWithStatusTransform];
-	}
-	
 	self.automaticallyAdjustsScrollViewInsets = NO;
 	self.statusBarNavBarView.hidden = YES;
 	self.statusBarHidden = NO;
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
+	[self refreshStatusBarNavBarView];
 }
 
 - (void)toggleStatusBarNavBarVisibility {
@@ -92,12 +35,14 @@ static UIView *statusBar = nil;
 		} else if ([[self navigationController] isNavigationBarHidden] == YES) {
 			self.statusBarNavBarView.hidden = NO;
 
+			[self.navigationController setNavigationBarHidden:NO animated: YES];
+			[[UIApplication sharedApplication] setStatusBarHidden:NO animated:YES];
+			[self setNeedsStatusBarAppearanceUpdate];
 			[self moveBoxMaxHighAnimatedWithCompletion:^(BOOL b) {
-				[self.navigationController setNavigationBarHidden:NO animated: NO];
 				self.statusBarHidden = NO;
-				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-					self.statusBarNavBarView.hidden = YES;
-				});
+//				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//					self.statusBarNavBarView.hidden = YES;
+//				});
 			}];
 		}
 	}
@@ -147,7 +92,7 @@ static UIView *statusBar = nil;
 
 - (void)moveBoxWithVelocity:(CGPoint)velocity animatedWithCompletion:(void (^)(BOOL b))completion {
 	NSLog(@"velocity %@", @(velocity.y));
-	NSTimeInterval time = 1.5;
+	NSTimeInterval time = 0.7;
 	CGFloat initialSpringVelocity = velocity.y / (self.highLimitY - self.lowLimitY);
 	if (0 <= fabsf(velocity.y) && fabsf(velocity.y) < 0.1) {
 		// force it in a specific direction
@@ -156,6 +101,10 @@ static UIView *statusBar = nil;
 			[self moveBoxMaxHighAnimatedWithCompletion:^(BOOL b) {
 				[self.navigationController setNavigationBarHidden:NO animated:NO];
 				self.statusBarHidden = NO;
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+					[self refreshStatusBarNavBarView];
+				});
+
 				completion(b);
 			}];
 		} else {
@@ -189,7 +138,9 @@ static UIView *statusBar = nil;
 							 if (velocity.y < 0) { // down
 								 self.statusBarHidden = NO;
 								 [self.navigationController setNavigationBarHidden:NO animated:NO];
-								 self.statusBarNavBarView.hidden = YES;
+								 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+									 self.statusBarNavBarView.hidden = YES;
+								 });
 							 }
 							 completion(b);
 						 }];
@@ -219,7 +170,7 @@ static UIView *statusBar = nil;
 		frame.size.height += [self statusBarHeight];
 		view.frame = frame;
 		UIWindow *window = [[UIWindow alloc] initWithFrame:view.bounds];
-		window.frame = CGRectOffset(window.frame, 100, 0);
+//		window.frame = CGRectOffset(window.frame, 100, 0);//debug
 		[window addSubview:view];
 		window.hidden = NO;
 		window.windowLevel = UIWindowLevelAlert + 1;
@@ -243,32 +194,21 @@ static UIView *statusBar = nil;
 }
 
 - (UIImage *)takeImageOfStatusBarNavBarRegion {	
-	CGRect statusBarRect = CGRectMake(0, 0, [UIView statusBar].frame.size.width, [self statusBarHeight]);
-	CGRect navBarRect = CGRectMake(0, 0, self.navigationController.navigationBar.frame.size.width, [self navBarHeight]);
-	navBarRect.origin.y = CGRectGetMaxY(statusBarRect);
-	CGRect statusNavBarFrame = CGRectMake(0, 0, CGRectGetWidth(statusBarRect), CGRectGetHeight(statusBarRect) + CGRectGetHeight(navBarRect));
+	CGFloat statusBarHeight = 20.0;
+	UIScreen *screen = [UIScreen mainScreen];
+	UIView *snapshotView = [screen snapshotViewAfterScreenUpdates:true];
+	CGRect statusNavBarFrame = snapshotView.bounds;
+	statusNavBarFrame.size.height = statusBarHeight + self.navigationController.navigationBar.frame.size.height;
 	UIGraphicsBeginImageContextWithOptions(statusNavBarFrame.size, true, 0);
-	[[UIView statusBar] setBackgroundColor:[self colorOfNavBar]];
-	[[UIView statusBarImage] drawInRect:statusBarRect];
-	[[self.navigationController.navigationBar viewToImage] drawInRect:navBarRect];
-	
+	[snapshotView drawViewHierarchyInRect:snapshotView.bounds afterScreenUpdates: true];
 	UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
 	UIGraphicsEndImageContext();
 	return image;
 }
 
-- (UIColor *)colorOfNavBar {
-	CGRect dot = CGRectMake(0, 0, 1, 1);
-	CGImageRef drawImage = CGImageCreateWithImageInRect([self.navigationController.navigationBar viewToImage].CGImage, dot);
-	UIColor *color = [UIColor colorWithPatternImage:[UIImage imageWithCGImage:drawImage]];
-	return color;
-}
-
 - (void)setStatusBarHidden:(BOOL)newVal {
 	if (self->statusBarHidden != newVal) {
-		if (!newVal) {
-			[UIView statusBar].backgroundColor = nil;
-		}
+
 		self->statusBarHidden = newVal;
 		[[UIApplication sharedApplication] setStatusBarHidden:newVal animated:NO];
 		[self setNeedsStatusBarAppearanceUpdate];

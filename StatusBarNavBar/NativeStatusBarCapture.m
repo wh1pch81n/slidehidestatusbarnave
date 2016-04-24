@@ -70,28 +70,8 @@
 	didBeginDrag = NO;
 }
 
-//- (UIImage *)takeImageOfStatusBarNavBarRegion {
-//	return self.imageStatus.image;
-	
-//	CGFloat statusBarHeight = 20.0;
-//	UIScreen *screen = [UIScreen mainScreen];
-//	UIView *snapshotView = [screen snapshotViewAfterScreenUpdates:true];
-//	CGRect statusNavBarFrame = snapshotView.bounds;
-//	statusNavBarFrame.size.height = statusBarHeight + self.navigationController.navigationBar.frame.size.height;
-//	UIGraphicsBeginImageContextWithOptions(statusNavBarFrame.size, true, 0);
-//	[snapshotView drawViewHierarchyInRect:snapshotView.bounds afterScreenUpdates: true];
-//	UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-//	UIGraphicsEndImageContext();
-//	[[self imageStatus] setImage:image];
-//	return image;
-//}
-
-//- (BOOL)prefersStatusBarHidden {
-//	return [super prefersStatusBarHidden];
-//}
-
 - (void)toggleStatusBar {
-	self.statusBarHidden = !self.statusBarHidden;
+	self->statusBarHidden = !self->statusBarHidden;
 	[self setNeedsStatusBarAppearanceUpdate];
 }
 
