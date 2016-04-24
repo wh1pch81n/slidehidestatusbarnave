@@ -119,7 +119,7 @@
 							 if (velocity.y < 0) { // down
 								 self.statusBarHidden = NO;
 								 [self.navigationController setNavigationBarHidden:NO animated:NO];
-								 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+								 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 									 self.statusBarNavBarView.hidden = YES;
 									 [self refreshStatusBarNavBarView];
 								 });
@@ -175,6 +175,9 @@
 
 /**Use this right before you hide nav and status*/
 - (void)refreshStatusBarNavBarView {
+	if (statusBarHidden == YES)
+		return;
+
 	UIImageView *imgView = [[self statusBarNavBarView] viewWithTag:123];
 	[imgView setImage:[self takeImageOfStatusBarNavBarRegion]];
 }
