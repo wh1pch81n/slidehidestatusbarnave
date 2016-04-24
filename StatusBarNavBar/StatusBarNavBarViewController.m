@@ -132,7 +132,9 @@ static UIViewController <StatusBarSwizzleDelegate>*swizzleDelegate = nil;
 				[self.navigationController setNavigationBarHidden:NO animated: NO];
 				self.statusBarHidden = NO;
 				[self setNeedsStatusBarAppearanceUpdate];
-				self.statusBarNavBarView.hidden = YES;
+				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+					self.statusBarNavBarView.hidden = YES;
+				});
 				[self refreshStatusBarNavBarView];
 			}];
 		}
@@ -200,7 +202,6 @@ static UIViewController <StatusBarSwizzleDelegate>*swizzleDelegate = nil;
 			}];
 		} else {
 			[self moveBoxMinLowAnimatedWithCompletion:^(BOOL b) {
-				[self refreshStatusBarNavBarView];
 				[self.navigationController setNavigationBarHidden:YES animated:NO];
 				self.statusBarHidden = YES;
 				[self setNeedsStatusBarAppearanceUpdate];
@@ -285,13 +286,20 @@ static UIViewController <StatusBarSwizzleDelegate>*swizzleDelegate = nil;
 	navBarRect.origin.y = CGRectGetMaxY(statusBarRect);
 	CGRect statusNavBarFrame = CGRectMake(0, 0, CGRectGetWidth(statusBarRect), CGRectGetHeight(statusBarRect) + CGRectGetHeight(navBarRect));
 	UIGraphicsBeginImageContextWithOptions(statusNavBarFrame.size, true, 0);
-
+	[[UIView statusBar] setBackgroundColor:[self colorOfNavBar]];
 	[[UIView statusBarImage] drawInRect:statusBarRect];
 	[[self.navigationController.navigationBar viewToImage] drawInRect:navBarRect];
 	
 	UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
 	UIGraphicsEndImageContext();
 	return image;
+}
+
+- (UIColor *)colorOfNavBar {
+	CGRect dot = CGRectMake(0, 0, 1, 1);
+	CGImageRef drawImage = CGImageCreateWithImageInRect([self.navigationController.navigationBar viewToImage].CGImage, dot);
+	UIColor *color = [UIColor colorWithPatternImage:[UIImage imageWithCGImage:drawImage]];
+	return color;
 }
 
 @end
