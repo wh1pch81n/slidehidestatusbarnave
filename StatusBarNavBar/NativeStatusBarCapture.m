@@ -11,38 +11,11 @@
 
 @implementation NativeStatusBarCapture
 
-//- (void)viewWillAppear:(BOOL)animated {
-//	[super viewWillAppear:animated];
-//	[[[self navigationController] navigationBar] addObserver:self
-//												  forKeyPath:@"hidden"
-//													 options:NSKeyValueObservingOptionNew
-//													 context:nil];
-//}
-//
-//- (void)viewWillDisappear:(BOOL)animated {
-//	[[[self navigationController] navigationBar] removeObserver:self
-//													 forKeyPath:@"hidden"];
-//	
-//}
-//
-//- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context {
-//	if ([object isKindOfClass:[UINavigationBar class]]) {
-//		UINavigationBar *bar = object;
-//		if ([bar isHidden] == false) {
-//				CGFloat statusBarHeight = 20.0;
-//				UIScreen *screen = [UIScreen mainScreen];
-//				UIView *snapshotView = [screen snapshotViewAfterScreenUpdates:true];
-//				CGRect statusNavBarFrame = snapshotView.bounds;
-//				statusNavBarFrame.size.height = statusBarHeight + self.navigationController.navigationBar.frame.size.height;
-//				UIGraphicsBeginImageContextWithOptions(statusNavBarFrame.size, true, 0);
-//				[snapshotView drawViewHierarchyInRect:snapshotView.bounds afterScreenUpdates: true];
-//				UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-//				UIGraphicsEndImageContext();
-//				[[self imageStatus] setImage:image];
-//				self.imageStatus.image = image;
-//		}
-//	}
-//}
+- (void)viewDidLoad {
+	[super viewDidLoad];
+	UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@"hi" style:UIBarButtonItemStyleDone target:self action:@selector(toggleStatusBar)];
+	self.navigationItem.rightBarButtonItem = item;
+}
 
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
@@ -92,29 +65,34 @@
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
 	// after this, move it with animation
 	[self moveBoxWithVelocity:velocity animatedWithCompletion:^(BOOL b) {
-		
+		[self setNeedsStatusBarAppearanceUpdate];
 	}];
 	didBeginDrag = NO;
 }
 
 //- (UIImage *)takeImageOfStatusBarNavBarRegion {
 //	return self.imageStatus.image;
-//	
-////	CGFloat statusBarHeight = 20.0;
-////	UIScreen *screen = [UIScreen mainScreen];
-////	UIView *snapshotView = [screen snapshotViewAfterScreenUpdates:true];
-////	CGRect statusNavBarFrame = snapshotView.bounds;
-////	statusNavBarFrame.size.height = statusBarHeight + self.navigationController.navigationBar.frame.size.height;
-////	UIGraphicsBeginImageContextWithOptions(statusNavBarFrame.size, true, 0);
-////	[snapshotView drawViewHierarchyInRect:snapshotView.bounds afterScreenUpdates: true];
-////	UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-////	UIGraphicsEndImageContext();
-////	[[self imageStatus] setImage:image];
-////	return image;
+	
+//	CGFloat statusBarHeight = 20.0;
+//	UIScreen *screen = [UIScreen mainScreen];
+//	UIView *snapshotView = [screen snapshotViewAfterScreenUpdates:true];
+//	CGRect statusNavBarFrame = snapshotView.bounds;
+//	statusNavBarFrame.size.height = statusBarHeight + self.navigationController.navigationBar.frame.size.height;
+//	UIGraphicsBeginImageContextWithOptions(statusNavBarFrame.size, true, 0);
+//	[snapshotView drawViewHierarchyInRect:snapshotView.bounds afterScreenUpdates: true];
+//	UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+//	UIGraphicsEndImageContext();
+//	[[self imageStatus] setImage:image];
+//	return image;
 //}
 
-- (BOOL)prefersStatusBarHidden {
-	return [super prefersStatusBarHidden];
+//- (BOOL)prefersStatusBarHidden {
+//	return [super prefersStatusBarHidden];
+//}
+
+- (void)toggleStatusBar {
+	self.statusBarHidden = !self.statusBarHidden;
+	[self setNeedsStatusBarAppearanceUpdate];
 }
 
 @end

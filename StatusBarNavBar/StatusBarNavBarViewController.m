@@ -9,10 +9,7 @@
 #import "StatusBarNavBarViewController.h"
 #import <objc/runtime.h>
 
-
-
 static UIView *statusBar = nil;
-static UIViewController <StatusBarSwizzleDelegate>*swizzleDelegate = nil;
 
 @interface UIView(View2Image)
 - (UIImage *)viewToImage;
@@ -34,35 +31,16 @@ static UIViewController <StatusBarSwizzleDelegate>*swizzleDelegate = nil;
 @end
 
 @interface UIView (SwizzleStatusBar)
-+ (void)setSwizzleDelegate:(UIViewController <StatusBarSwizzleDelegate>*)delegate;
 + (UIView *)statusBar;
 + (UIImage *)statusBarImage;
 @end
 
 @implementation UIView (SwizzleStatusBar)
 
-+ (void)setSwizzleDelegate:(UIViewController <StatusBarSwizzleDelegate>*)delegate {
-	swizzleDelegate = delegate;
-}
-
-
 + (UIImage *)statusBarImage {
 	return [[self statusBar] viewToImage];
 }
 + (UIView *)statusBar {
-//	if (!statusBar) {
-//		StatusBarNavBarViewController */*UIViewController <StatusBarSwizzleDelegate>*/vc =  swizzleDelegate;//[self currentUserFacingViewController];
-//		[self swapTransformWithStatusTransform];
-//		NSLog(@"1%@", @(vc.statusBarHidden));
-//		[vc setStatusBarHidden:!vc.statusBarHidden];
-//		[vc setNeedsStatusBarAppearanceUpdate];
-//		NSLog(@"2%@", @(vc.statusBarHidden));
-//		[vc setStatusBarHidden:!vc.statusBarHidden];
-//		[vc setNeedsStatusBarAppearanceUpdate];
-//		NSLog(@"3%@", @(vc.statusBarHidden));
-//		[self swapTransformWithStatusTransform];
-//		swizzleDelegate = nil;
-//	}
 	return statusBar;
 }
 + (void)swapTransformWithStatusTransform {
@@ -91,29 +69,14 @@ static UIViewController <StatusBarSwizzleDelegate>*swizzleDelegate = nil;
 	[super viewDidLoad];
 	if (![UIView statusBar]) {
 		[UIView swapTransformWithStatusTransform];
-		NSLog(@"1%@", @(self.statusBarHidden));
 		[self setStatusBarHidden:!self.statusBarHidden];
-		[self setNeedsStatusBarAppearanceUpdate];
-		NSLog(@"2%@", @(self.statusBarHidden));
 		[self setStatusBarHidden:!self.statusBarHidden];
-		[self setNeedsStatusBarAppearanceUpdate];
-		NSLog(@"3%@", @(self.statusBarHidden));
 		[UIView swapTransformWithStatusTransform];
 	}
 	
-//	[UIView setSwizzleDelegate:self];
 	self.automaticallyAdjustsScrollViewInsets = NO;
 	self.statusBarNavBarView.hidden = YES;
 	self.statusBarHidden = NO;
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-	[super viewDidAppear:animated];
-//	[self refreshStatusBarNavBarView];
-}
-
-- (BOOL)prefersStatusBarHidden {
-	return self.statusBarHidden;
 }
 
 - (void)toggleStatusBarNavBarVisibility {
@@ -123,19 +86,18 @@ static UIViewController <StatusBarSwizzleDelegate>*swizzleDelegate = nil;
 			self.statusBarNavBarView.hidden = NO;
 			[self.navigationController setNavigationBarHidden:YES animated: NO];
 			self.statusBarHidden = YES;
-			[self setNeedsStatusBarAppearanceUpdate];
 			[self moveBoxMinLowAnimatedWithCompletion:^(BOOL b) {
 			
 			}];
 		} else if ([[self navigationController] isNavigationBarHidden] == YES) {
+			self.statusBarNavBarView.hidden = NO;
+
 			[self moveBoxMaxHighAnimatedWithCompletion:^(BOOL b) {
 				[self.navigationController setNavigationBarHidden:NO animated: NO];
 				self.statusBarHidden = NO;
-				[self setNeedsStatusBarAppearanceUpdate];
 				dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
 					self.statusBarNavBarView.hidden = YES;
 				});
-				[self refreshStatusBarNavBarView];
 			}];
 		}
 	}
@@ -160,13 +122,11 @@ static UIViewController <StatusBarSwizzleDelegate>*swizzleDelegate = nil;
 }
 
 - (void)moveBoxByOffset:(CGFloat)offset {
-//	[self statusBarNavBarView].hidden = false;
 	CGFloat yc = self.statusBarNavBarView.frame.origin.y + offset;
 	CGRect frame = self.statusBarNavBarView.frame;
 	if (yc >= [self highLimitY]) {
 		frame.origin.y = self.highLimitY;
 		self.statusBarNavBarView.frame = frame;
-		
 	} else if (yc <= self.lowLimitY) {
 		frame.origin.y = [self lowLimitY];
 		self.statusBarNavBarView.frame = frame;
@@ -176,10 +136,9 @@ static UIViewController <StatusBarSwizzleDelegate>*swizzleDelegate = nil;
 		self.statusBarNavBarView.hidden = false;
 		if (offset < 0) { // up
 			NSLog(@"Up");
-//			[self refreshStatusBarNavBarView];
 			[self.navigationController setNavigationBarHidden:YES animated:NO];
 			self.statusBarHidden = YES;
-			[self setNeedsStatusBarAppearanceUpdate];
+			
 		} else { // down
 			NSLog(@"down");
 		}
@@ -197,14 +156,12 @@ static UIViewController <StatusBarSwizzleDelegate>*swizzleDelegate = nil;
 			[self moveBoxMaxHighAnimatedWithCompletion:^(BOOL b) {
 				[self.navigationController setNavigationBarHidden:NO animated:NO];
 				self.statusBarHidden = NO;
-				[self setNeedsStatusBarAppearanceUpdate];
 				completion(b);
 			}];
 		} else {
 			[self moveBoxMinLowAnimatedWithCompletion:^(BOOL b) {
 				[self.navigationController setNavigationBarHidden:YES animated:NO];
 				self.statusBarHidden = YES;
-				[self setNeedsStatusBarAppearanceUpdate];
 				completion(b);
 			}];
 		}
@@ -229,6 +186,11 @@ static UIViewController <StatusBarSwizzleDelegate>*swizzleDelegate = nil;
 							 [self moveBoxByOffset:((self.highLimitY - self.lowLimitY) * (velocity.y < 0 ? 1 : -1))];
 						 }
 						 completion:^(BOOL b) {
+							 if (velocity.y < 0) { // down
+								 self.statusBarHidden = NO;
+								 [self.navigationController setNavigationBarHidden:NO animated:NO];
+								 self.statusBarNavBarView.hidden = YES;
+							 }
 							 completion(b);
 						 }];
 	}
@@ -249,7 +211,6 @@ static UIViewController <StatusBarSwizzleDelegate>*swizzleDelegate = nil;
 - (UIView *__nonnull)statusBarNavBarView {
 	static UIView *__view = nil;
 	
-	// Swap with image later
 	if (__view == nil) {
 		UIImageView *view = [[UIImageView alloc] init];
 		view.tag = 123;
@@ -258,6 +219,7 @@ static UIViewController <StatusBarSwizzleDelegate>*swizzleDelegate = nil;
 		frame.size.height += [self statusBarHeight];
 		view.frame = frame;
 		UIWindow *window = [[UIWindow alloc] initWithFrame:view.bounds];
+		window.frame = CGRectOffset(window.frame, 100, 0);
 		[window addSubview:view];
 		window.hidden = NO;
 		window.windowLevel = UIWindowLevelAlert + 1;
@@ -300,6 +262,17 @@ static UIViewController <StatusBarSwizzleDelegate>*swizzleDelegate = nil;
 	CGImageRef drawImage = CGImageCreateWithImageInRect([self.navigationController.navigationBar viewToImage].CGImage, dot);
 	UIColor *color = [UIColor colorWithPatternImage:[UIImage imageWithCGImage:drawImage]];
 	return color;
+}
+
+- (void)setStatusBarHidden:(BOOL)newVal {
+	if (self->statusBarHidden != newVal) {
+		if (!newVal) {
+			[UIView statusBar].backgroundColor = nil;
+		}
+		self->statusBarHidden = newVal;
+		[[UIApplication sharedApplication] setStatusBarHidden:newVal animated:NO];
+		[self setNeedsStatusBarAppearanceUpdate];
+	}
 }
 
 @end
