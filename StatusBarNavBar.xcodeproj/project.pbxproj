@@ -7,15 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2F1D2B851CCCFA0F00B22A39 /* StatusBarNavBarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F1D2B841CCCFA0F00B22A39 /* StatusBarNavBarViewController.m */; };
 		2F7FB5A21CCBF62A00BF31DA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F7FB5A11CCBF62A00BF31DA /* main.m */; };
 		2F7FB5A51CCBF62A00BF31DA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F7FB5A41CCBF62A00BF31DA /* AppDelegate.m */; };
 		2F7FB5A81CCBF62A00BF31DA /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F7FB5A71CCBF62A00BF31DA /* ViewController.m */; };
 		2F7FB5AB1CCBF62A00BF31DA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2F7FB5A91CCBF62A00BF31DA /* Main.storyboard */; };
 		2F7FB5AD1CCBF62A00BF31DA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F7FB5AC1CCBF62A00BF31DA /* Assets.xcassets */; };
 		2F7FB5B01CCBF62A00BF31DA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2F7FB5AE1CCBF62A00BF31DA /* LaunchScreen.storyboard */; };
+		2F7FB5B91CCC0E4200BF31DA /* NativeStatusBarCapture.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F7FB5B81CCC0E4200BF31DA /* NativeStatusBarCapture.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		2F1D2B831CCCFA0F00B22A39 /* StatusBarNavBarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusBarNavBarViewController.h; sourceTree = "<group>"; };
+		2F1D2B841CCCFA0F00B22A39 /* StatusBarNavBarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusBarNavBarViewController.m; sourceTree = "<group>"; };
 		2F7FB59D1CCBF62A00BF31DA /* StatusBarNavBar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = StatusBarNavBar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F7FB5A11CCBF62A00BF31DA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		2F7FB5A31CCBF62A00BF31DA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -26,6 +30,8 @@
 		2F7FB5AC1CCBF62A00BF31DA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2F7FB5AF1CCBF62A00BF31DA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2F7FB5B11CCBF62A00BF31DA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		2F7FB5B71CCC0E4200BF31DA /* NativeStatusBarCapture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NativeStatusBarCapture.h; sourceTree = "<group>"; };
+		2F7FB5B81CCC0E4200BF31DA /* NativeStatusBarCapture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NativeStatusBarCapture.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,6 +68,10 @@
 				2F7FB5A41CCBF62A00BF31DA /* AppDelegate.m */,
 				2F7FB5A61CCBF62A00BF31DA /* ViewController.h */,
 				2F7FB5A71CCBF62A00BF31DA /* ViewController.m */,
+				2F7FB5B71CCC0E4200BF31DA /* NativeStatusBarCapture.h */,
+				2F7FB5B81CCC0E4200BF31DA /* NativeStatusBarCapture.m */,
+				2F1D2B831CCCFA0F00B22A39 /* StatusBarNavBarViewController.h */,
+				2F1D2B841CCCFA0F00B22A39 /* StatusBarNavBarViewController.m */,
 				2F7FB5A91CCBF62A00BF31DA /* Main.storyboard */,
 				2F7FB5AC1CCBF62A00BF31DA /* Assets.xcassets */,
 				2F7FB5AE1CCBF62A00BF31DA /* LaunchScreen.storyboard */,
@@ -152,6 +162,8 @@
 				2F7FB5A81CCBF62A00BF31DA /* ViewController.m in Sources */,
 				2F7FB5A51CCBF62A00BF31DA /* AppDelegate.m in Sources */,
 				2F7FB5A21CCBF62A00BF31DA /* main.m in Sources */,
+				2F7FB5B91CCC0E4200BF31DA /* NativeStatusBarCapture.m in Sources */,
+				2F1D2B851CCCFA0F00B22A39 /* StatusBarNavBarViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -300,6 +312,7 @@
 				2F7FB5B61CCBF62A00BF31DA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
