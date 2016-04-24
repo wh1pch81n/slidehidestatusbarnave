@@ -84,7 +84,7 @@
 }
 
 - (void)moveBoxWithVelocity:(CGPoint)velocity animatedWithCompletion:(void (^)(BOOL b))completion {
-	NSLog(@"velocity %@", @(velocity.y));
+//	NSLog(@"velocity %@", @(velocity.y));
 	NSTimeInterval time = 0.7;
 	CGFloat initialSpringVelocity = velocity.y / (self.highLimitY - self.lowLimitY);
 	if (0 <= fabsf(velocity.y) && fabsf(velocity.y) < 0.1) {
