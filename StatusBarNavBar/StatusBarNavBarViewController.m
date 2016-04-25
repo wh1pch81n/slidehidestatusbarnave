@@ -34,8 +34,8 @@
 			self.statusBarNavBarView.hidden = NO;
 
 			[self.navigationController setNavigationBarHidden:NO animated: YES];
-			[[UIApplication sharedApplication] setStatusBarHidden:NO animated:YES];
-			[self setNeedsStatusBarAppearanceUpdate];
+//			[[UIApplication sharedApplication] setStatusBarHidden:NO animated:YES];
+//			[self setNeedsStatusBarAppearanceUpdate];
 			[self moveBoxMaxHighAnimatedWithCompletion:nil];
 		}
 	}
@@ -85,7 +85,7 @@
 
 - (void)moveBoxWithVelocity:(CGPoint)velocity animatedWithCompletion:(void (^)(BOOL b))completion {
 //	NSLog(@"velocity %@", @(velocity.y));
-	NSTimeInterval time = 0.7;
+	NSTimeInterval time = 0.5;
 	CGFloat initialSpringVelocity = velocity.y / (self.highLimitY - self.lowLimitY);
 	if (0 <= fabsf(velocity.y) && fabsf(velocity.y) < 0.1) {
 		// force it in a specific direction
@@ -107,15 +107,22 @@
 			CGFloat percent = fabsf(currY - [self highLimitY]) / fabs([self highLimitY] - [self lowLimitY]);
 			time *= percent;
 		}
+		// cancel any previous running animation
+//		[self.statusBarNavBarView.layer removeAllAnimations];
+		static NSString *lastValue = @"";
+		lastValue = [NSUUID UUID].UUIDString;
+		void(^actionBlock)(NSString *runningValue) = ^(NSString *runningValue){
 		[UIView animateWithDuration:time
 							  delay: 0
 			 usingSpringWithDamping: 1
 			  initialSpringVelocity: initialSpringVelocity
-							options: UIViewAnimationOptionAllowUserInteraction
+							options: UIViewAnimationOptionAllowUserInteraction | UIViewAnimationOptionBeginFromCurrentState
 						 animations:^{
 							 [self moveBoxByOffset:((self.highLimitY - self.lowLimitY) * (velocity.y < 0 ? 1 : -1))];
 						 }
 						 completion:^(BOOL b) {
+							 if (![runningValue isEqualToString:lastValue])
+								 return;
 							 if (velocity.y < 0) { // down
 								 self.statusBarHidden = NO;
 								 [self.navigationController setNavigationBarHidden:NO animated:NO];
@@ -130,6 +137,8 @@
 							 if (completion)
 								 completion(b);
 						 }];
+		};
+		actionBlock(lastValue);
 	}
 }
 
