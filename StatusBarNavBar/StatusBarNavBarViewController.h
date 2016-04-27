@@ -8,16 +8,5 @@
 
 #import <UIKit/UIKit.h>
 
-@interface StatusBarNavBarViewController : UIViewController {
-@protected
-	BOOL didBeginDrag;
-	BOOL statusBarHidden;
-}
-
-- (void)toggleStatusBarNavBarVisibility;
-
-- (void)moveBoxByOffset:(CGFloat)offset;
-- (void)moveBoxWithVelocity:(CGPoint)velocity animatedWithCompletion:(void (^__nullable)(BOOL b))completion;
-- (UIView *__nonnull)statusBarNavBarView;
-
+@interface StatusBarNavBarViewController : UIViewController
 @end
